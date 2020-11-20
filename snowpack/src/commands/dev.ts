@@ -193,6 +193,8 @@ function sendResponseFile(
     ETag,
     Vary: 'Accept-Encoding',
   };
+  
+  if (req.url?.startsWith('/web_modules')) headers['Cache-Control'] = 'max-age=604800'; // 1 week
 
   if (req.headers['if-none-match'] === ETag) {
     res.writeHead(304, headers);
@@ -602,6 +604,7 @@ export async function startDevServer(commandOptions: CommandOptions): Promise<Sn
         }
         let fileLoc =
           (await attemptLoadFile(requestedFile + '.html')) ||
+          (await attemptLoadFile(requestedFile + 'snowpack-dev.html')) ||
           (await attemptLoadFile(requestedFile + 'index.html')) ||
           (await attemptLoadFile(requestedFile + '/index.html'));
         if (fileLoc) {
